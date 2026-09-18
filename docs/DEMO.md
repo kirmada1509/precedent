@@ -19,3 +19,14 @@ Say the honest limit out loud once (at 1:30). It is the difference between a sec
 - [ ] Confirm the kill switch is off and the proof strip shows numbers (needs `docs/bench.json` and `docs/eval.json`).
 - [ ] Do not narrate numbers you have not read off the screen in that take.
 - [ ] Upload unlisted; check it plays logged out; length ≤ 2:00.
+
+## Regenerating the recorded video
+
+`scripts/record_demo.py` drives real Chrome against the live URL following the table above, with a visible cursor and burned-in captions, and narrates with Gemini text-to-speech. Each narration sentence is pinned to its on-screen action. It resets the demo before and after, and writes `video/precedent-demo.mp4` (about 1:33, 1080p) and a `.srt` (`video/` is gitignored).
+
+```bash
+uv run --env-file .env --with playwright --with imageio-ffmpeg python scripts/record_demo.py
+DEMO_URL=http://localhost:8000 uv run --env-file .env --with playwright --with imageio-ffmpeg python scripts/record_demo.py   # against a local run
+```
+
+The narration is AI-generated speech; say so when you upload the video.

@@ -6,3 +6,4 @@ __pycache__/
 data/adjudications.jsonl
 data/audit.jsonl
 .pytest_cache/
+video/
