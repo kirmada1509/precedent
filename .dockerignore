@@ -1,0 +1,12 @@
+.venv
+.env
+.git
+**/__pycache__
+.pytest_cache
+tests
+eval
+data/adjudications.jsonl
+data/audit.jsonl
+data/calibration.jsonl
+data/heldout*.jsonl
+*.md

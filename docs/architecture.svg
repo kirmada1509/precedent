@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 640" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Inter, sans-serif">
+  <title>Precedent architecture</title>
+  <desc>An agent proposes a tool call. The Precedent guard traces argument provenance, builds a canonical action text, queries an in-process Moss session for nearest past decisions, and decides allow, block or escalate. Blocks and escalations become evidence cards for human review; a human decision is written back into the live Moss session.</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#3b4a6b"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#0f9d6b"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#d64545"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#3b5bdb"/></marker>
+  </defs>
+  <rect width="1180" height="640" fill="#ffffff"/>
+  <style>
+    .t { font-size: 15px; font-weight: 600; fill: #161a23; }
+    .s { font-size: 12.5px; fill: #4a5568; }
+    .h { font-size: 11px; font-weight: 700; letter-spacing: .08em; fill: #6b7690; text-transform: uppercase; }
+    .box { fill: #f5f7fb; stroke: #c9d1e3; stroke-width: 1.5; }
+    .moss { fill: #edf1ff; stroke: #3b5bdb; stroke-width: 2; }
+    .guard { fill: #fbfcff; stroke: #3b5bdb; stroke-width: 1.5; stroke-dasharray: 6 5; }
+    .ok { fill: #e8f7f1; stroke: #0f9d6b; stroke-width: 1.5; }
+    .no { fill: #fdeeee; stroke: #d64545; stroke-width: 1.5; }
+    .esc { fill: #fdf5e4; stroke: #b7791f; stroke-width: 1.5; }
+    .hum { fill: #fff; stroke: #3b5bdb; stroke-width: 1.5; }
+    .mono { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 11.5px; fill: #2d3748; }
+    .lat { font-size: 11.5px; font-weight: 700; fill: #3b5bdb; font-family: ui-monospace, Menlo, monospace; }
+  </style>
+
+  <text x="30" y="36" class="t" style="font-size:20px">Precedent: every proposed action is checked against past decisions before it can run</text>
+  <text x="30" y="58" class="s">In-process retrieval on the hot path, fail-closed, with human decisions written back into the live index.</text>
+
+  <!-- agent -->
+  <rect x="30" y="120" width="190" height="150" rx="14" class="box"/>
+  <text x="46" y="146" class="h">Agent loop</text>
+  <text x="46" y="172" class="t">LLM + tools</text>
+  <text x="46" y="194" class="s">reads tickets, emails,</text>
+  <text x="46" y="211" class="s">tool output; proposes a</text>
+  <text x="46" y="228" class="s">tool call with arguments</text>
+  <text x="46" y="252" class="mono">issue_refund(400, 4412)</text>
+
+  <!-- guard container -->
+  <rect x="265" y="90" width="640" height="300" rx="18" class="guard"/>
+  <text x="285" y="115" class="h">Precedent guard · in-process</text>
+  <text x="885" y="115" class="lat" text-anchor="end">hard budget 50 ms · any error or timeout blocks</text>
+
+  <rect x="285" y="135" width="180" height="96" rx="12" class="box"/>
+  <text x="300" y="160" class="t">1 Provenance</text>
+  <text x="300" y="180" class="s">harness traces each arg</text>
+  <text x="300" y="196" class="s">to where it came from;</text>
+  <text x="300" y="212" class="s">email body = untrusted</text>
+
+  <rect x="485" y="135" width="180" height="96" rx="12" class="box"/>
+  <text x="500" y="160" class="t">2 Featurize</text>
+  <text x="500" y="180" class="s">canonical action text +</text>
+  <text x="500" y="196" class="s">exact signature: tool, arg</text>
+  <text x="500" y="212" class="s">names, provenance, checks</text>
+
+  <rect x="685" y="135" width="200" height="96" rx="12" class="moss"/>
+  <text x="700" y="160" class="t" style="fill:#2b45b0">3 Moss session</text>
+  <text x="700" y="180" class="s">local index, hybrid search,</text>
+  <text x="700" y="196" class="s">metadata filter on tool,</text>
+  <text x="700" y="212" class="s">no network hop per query</text>
+
+  <rect x="485" y="262" width="400" height="104" rx="12" class="box"/>
+  <text x="500" y="287" class="t">4 Decision rule (nearest precedent)</text>
+  <text x="500" y="307" class="s">weighted vote of same-shape neighbours; a block needs little</text>
+  <text x="500" y="323" class="s">mass, an allow needs near-unanimity. No precedent for the tool,</text>
+  <text x="500" y="339" class="s">or none with this exact shape, means escalate, never guess.</text>
+  <text x="500" y="357" class="mono">allow · block · escalate</text>
+
+  <rect x="285" y="262" width="180" height="104" rx="12" class="box"/>
+  <text x="300" y="287" class="t">Kill switch</text>
+  <text x="300" y="307" class="s">blocks everything.</text>
+  <text x="300" y="323" class="s">Fail-closed: no code path</text>
+  <text x="300" y="339" class="s">turns a failure into allow.</text>
+
+  <!-- flow arrows in guard -->
+  <path d="M220 190H283" stroke="#3b4a6b" stroke-width="2" fill="none" marker-end="url(#a)"/>
+  <path d="M465 183H483" stroke="#3b4a6b" stroke-width="2" fill="none" marker-end="url(#a)"/>
+  <path d="M665 183H683" stroke="#3b4a6b" stroke-width="2" fill="none" marker-end="url(#a)"/>
+  <path d="M785 231V262" stroke="#3b4a6b" stroke-width="2" fill="none" marker-end="url(#a)"/>
+  <text x="794" y="250" class="s">top-k precedents</text>
+
+  <!-- outcomes -->
+  <rect x="960" y="110" width="190" height="70" rx="12" class="ok"/>
+  <text x="976" y="136" class="t" style="fill:#0a6b48">ALLOW</text>
+  <text x="976" y="156" class="s">tool runs</text>
+  <rect x="960" y="200" width="190" height="70" rx="12" class="no"/>
+  <text x="976" y="226" class="t" style="fill:#a12f2f">BLOCK</text>
+  <text x="976" y="246" class="s">refused, evidence card</text>
+  <rect x="960" y="290" width="190" height="70" rx="12" class="esc"/>
+  <text x="976" y="316" class="t" style="fill:#8a5a10">ESCALATE</text>
+  <text x="976" y="336" class="s">no precedent, ask a human</text>
+  <path d="M885 320H958" stroke="#3b4a6b" stroke-width="2" fill="none" marker-end="url(#a)"/>
+  <path d="M885 300 C930 300 930 235 958 235" stroke="#d64545" stroke-width="2" fill="none" marker-end="url(#r)"/>
+  <path d="M885 285 C935 285 925 145 958 145" stroke="#0f9d6b" stroke-width="2" fill="none" marker-end="url(#g)"/>
+
+  <!-- review loop -->
+  <rect x="640" y="450" width="250" height="110" rx="14" class="hum"/>
+  <text x="656" y="476" class="h">Human review</text>
+  <text x="656" y="500" class="t">Evidence card</text>
+  <text x="656" y="519" class="s">action, top precedents with</text>
+  <text x="656" y="535" class="s">weights, matched features, sha256.</text>
+  <text x="656" y="551" class="s">Confirm block / allow.</text>
+
+  <rect x="290" y="450" width="290" height="110" rx="14" class="moss"/>
+  <text x="306" y="476" class="h">Write-back</text>
+  <text x="306" y="500" class="t" style="fill:#2b45b0">session.add_docs(decision)</text>
+  <text x="306" y="519" class="s">queryable on the very next call:</text>
+  <text x="306" y="535" class="s">no reindex job, no redeploy.</text>
+  <text x="306" y="551" class="lat">insert to retrievable ≈ 11 ms (p50)</text>
+
+  <rect x="960" y="450" width="190" height="110" rx="14" class="box"/>
+  <text x="976" y="476" class="h">Audit</text>
+  <text x="976" y="500" class="t">Append-only log</text>
+  <text x="976" y="519" class="s">every decision and every</text>
+  <text x="976" y="535" class="s">human adjudication,</text>
+  <text x="976" y="551" class="s">replayed on boot.</text>
+
+  <path d="M1055 270V448" stroke="#6b7690" stroke-width="1.6" fill="none" stroke-dasharray="4 4" marker-end="url(#a)"/>
+  <path d="M1000 360 C1000 410 850 420 780 448" stroke="#b7791f" stroke-width="2" fill="none" marker-end="url(#a)"/>
+  <path d="M640 505H582" stroke="#3b5bdb" stroke-width="2.4" fill="none" marker-end="url(#b)"/>
+  <path d="M475 450V246H735V233" stroke="#3b5bdb" stroke-width="2.4" fill="none" stroke-dasharray="6 4" marker-end="url(#b)"/>
+  <text x="30" y="440" class="s" style="fill:#3b5bdb;font-weight:600">Enforced on the next call, same session</text>
+
+  <!-- tools -->
+  <text x="30" y="330" class="h">Trust boundary</text>
+  <text x="30" y="350" class="s">Untrusted: email bodies,</text>
+  <text x="30" y="366" class="s">third-party tool output.</text>
+  <text x="30" y="382" class="s">Trusted: internal systems,</text>
+  <text x="30" y="398" class="s">verified headers.</text>
+  <text x="30" y="616" class="s">Measured on a laptop: check p50 4.3 ms (back-to-back) / 15 ms (calls spaced 300 ms), n=1,000/100, 403 precedents. See docs/eval.json and docs/bench.json.</text>
+</svg>

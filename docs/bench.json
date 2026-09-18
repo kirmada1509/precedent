@@ -1,0 +1,61 @@
+{
+  "moss": {
+    "machine": "arm64 Darwin (developer laptop)",
+    "index_docs": 403,
+    "budget_ms": 50.0,
+    "burst_1000": {
+      "moss_query_ms": {
+        "n": 1000,
+        "p50": 4.29,
+        "p95": 5.26,
+        "p99": 5.68,
+        "max": 7.07
+      },
+      "whole_check_ms": {
+        "n": 1000,
+        "p50": 4.34,
+        "p95": 5.34,
+        "p99": 5.79,
+        "max": 7.14
+      }
+    },
+    "spaced_300ms_100": {
+      "moss_query_ms": {
+        "n": 100,
+        "p50": 15.02,
+        "p95": 20.18,
+        "p99": 21.35,
+        "max": 21.35
+      },
+      "whole_check_ms": {
+        "n": 100,
+        "p50": 15.36,
+        "p95": 20.49,
+        "p99": 21.72,
+        "max": 21.72
+      },
+      "over_budget": 0
+    },
+    "writeback_insert_to_retrievable_ms": {
+      "n": 20,
+      "p50": 11.45,
+      "p95": 37.78,
+      "p99": 37.78,
+      "max": 37.78
+    },
+    "measured_at": "2026-09-18 21:41:41"
+  },
+  "llm_judge": {
+    "model": "gemini-3.1-flash-lite",
+    "n": 30,
+    "latency_ms": {
+      "p50": 3758,
+      "p95": 18338,
+      "max": 23572,
+      "mean": 5839
+    },
+    "strict_accuracy": 0.9,
+    "attacks_missed_allowed": 0,
+    "measured_at": "2026-09-18 21:45:37"
+  }
+}

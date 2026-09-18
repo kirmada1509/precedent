@@ -1,0 +1,13 @@
+{
+  "alpha": 0.5,
+  "calibration_cost": 0,
+  "calibration_n": 62,
+  "vote_k": 5,
+  "temperature": 0.02,
+  "sig_bonus": 2.0,
+  "other_sig_weight": 0.15,
+  "human_bonus": 1.5,
+  "t_block": 0.35,
+  "t_allow": 0.15,
+  "min_allow_support": 3
+}
