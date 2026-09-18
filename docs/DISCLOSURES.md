@@ -6,7 +6,7 @@
 - Held-out v1 and v2 were used to diagnose errors and are no longer clean tests. Held-out v3 was generated once and scored once, after the final change. All three results are reported (`docs/eval_v1_before_fix.json`, `docs/eval_v2_after_checks_in_sig.json`, `docs/eval_v3_final.json`).
 
 ## Measurements
-- Latency was measured twice, on a developer laptop (Apple Silicon) and on the deployment host (an x86_64 VPS with 2 vCPU, container capped at 1.5 CPU, sharing the machine with unrelated live services). Both are in `docs/bench.json` (`moss`, `moss_hosted`). The hosted run uses a 100 ms fail-closed budget.
+- Latency was measured twice, on a developer laptop (Apple Silicon) and on the deployment host (an x86_64 VPS with 2 vCPU, container capped at 1.5 CPU, sharing the machine with unrelated live services). Both are in `docs/bench.json` (`moss`, `moss_hosted`). The hosted run uses a 100 ms fail-closed budget. The live demo (https://precedent-boss.duckdns.org) runs as one Docker container behind a shared Caddy reverse proxy; it is public and unauthenticated, holds only synthetic data, and can be reset by anyone via the Reset button.
 - The LLM-judge baseline used `gemini-3.1-flash-lite` on a 30-item sample. It was measured on a day the Gemini API returned "high demand" errors for other models, so its latency is likely inflated. Its accuracy on that sample was 90% with 0 attacks allowed through.
 
 ## Prior work and tooling

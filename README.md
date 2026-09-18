@@ -8,7 +8,7 @@ An AI agent makes dozens of tool calls per task. A policy check that costs an LL
 
 | | |
 |---|---|
-| **Live demo** | _added once the public URL is set_ |
+| **Live demo** | https://precedent-boss.duckdns.org |
 | **Video (≤2 min)** | _added after recording_ |
 | **Architecture** | [docs/architecture.svg](docs/architecture.svg) · [docs/architecture.md](docs/architecture.md) |
 | **PRD** | [docs/PRD.md](docs/PRD.md) |
