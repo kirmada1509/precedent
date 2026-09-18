@@ -220,15 +220,18 @@ function renderEvidence() {
 }
 
 function renderProof() {
-  const s = S.stats || {}, b = s.bench || {}, e = s.eval || {}, m = b.moss, j = b.llm_judge;
-  const burst = m?.burst_1000?.whole_check_ms, spaced = m?.spaced_300ms_100?.whole_check_ms, judge = j?.latency_ms;
-  const max = Math.max(judge?.p50 || 0, spaced?.p50 || 0, burst?.p50 || 0, 1);
+  const s = S.stats || {}, b = s.bench || {}, e = s.eval || {}, m = b.moss, h = b.moss_hosted, j = b.llm_judge;
+  const lap = m?.burst_1000?.whole_check_ms, lapSp = m?.spaced_300ms_100?.whole_check_ms;
+  const hb = h?.burst_1000?.whole_check_ms, hs = h?.spaced_300ms_100?.whole_check_ms, judge = j?.latency_ms;
+  const head = hb || lap;
+  const vals = [lap?.p50, lapSp?.p50, hb?.p50, hs?.p50].filter((x) => x != null);
+  const max = Math.max(judge?.p50 || 0, ...vals, 1);
   const bar = (label, val, color) => `<div class="bar"><span>${label}</span><div class="track"><div class="fill" style="width:${Math.max(1.2, (val / max) * 100)}%;background:${color}"></div></div><span class="num">${msUnit(val)}</span></div>`;
-  const t1 = m ? `<div class="tile"><h2>Cost of checking one action</h2>
-      <div class="big">${ms(burst.p50)} ms<small>p50 · p99 ${ms(burst.p99)} ms · 1,000 checks</small></div>
-      <div class="bars">${bar("Precedent (Moss)", burst.p50, "var(--accent)")}${bar("…calls spaced out", spaced.p50, "var(--accent)")}${j ? bar("LLM judge", judge.p50, "var(--block)") : ""}</div>
-      ${j ? `<p>One agent run of 40 actions, every action checked: <b>${((burst.p50 * 40) / 1000).toFixed(2)}–${((spaced.p50 * 40) / 1000).toFixed(1)} s</b> with Precedent vs <b>${Math.round((judge.p50 * 40) / 1000)} s</b> with a fast LLM judge (${esc(j.model)}, p50 ${msUnit(judge.p50)}, measured from this laptop on a busy day).</p>` : ""}
-      <p>${esc(m.machine)}, ${m.index_docs} precedents, hybrid retrieval, in-process.</p></div>` : `<div class="tile"><h2>Cost of checking one action</h2><p>Run <code>eval/bench_latency.py</code> to populate.</p></div>`;
+  const t1 = head ? `<div class="tile"><h2>Cost of checking one action</h2>
+      <div class="big">${ms(head.p50)} ms<small>p50 · p99 ${ms(head.p99)} ms · ${hb ? "deployed host" : "laptop"}, 1,000 checks</small></div>
+      <div class="bars">${lap ? bar("Laptop", lap.p50, "var(--accent)") : ""}${hb ? bar("Deployed host", hb.p50, "var(--accent)") : ""}${hs ? bar("Host, paced calls", hs.p50, "var(--accent)") : lapSp ? bar("Laptop, paced", lapSp.p50, "var(--accent)") : ""}${j ? bar("LLM judge", judge.p50, "var(--block)") : ""}</div>
+      ${j && vals.length ? `<p>One agent run of 40 actions, every action checked: <b>${((Math.min(...vals) * 40) / 1000).toFixed(1)}–${((Math.max(...vals) * 40) / 1000).toFixed(1)} s</b> with Precedent vs <b>${Math.round((judge.p50 * 40) / 1000)} s</b> with a fast LLM judge (${esc(j.model)}, p50 ${msUnit(judge.p50)}, measured from the laptop on a busy day).</p>` : ""}
+      <p>${h ? esc(h.machine) + ". " : ""}${esc(m?.machine || "")}. ${(h || m).index_docs} precedents, hybrid retrieval, in-process.</p></div>` : `<div class="tile"><h2>Cost of checking one action</h2><p>Run <code>eval/bench_latency.py</code> to populate.</p></div>`;
   const t2 = e.n ? `<div class="tile"><h2>Held-out evaluation · ${e.n} unseen actions</h2>
       <div class="big">${Math.round(e.strict_accuracy * e.n)}/${e.n}<small>correct</small></div>
       <ul><li>Attacks blocked <b>${e.attacks_blocked}/${e.attacks_total}</b>, none allowed through</li>
@@ -237,9 +240,9 @@ function renderProof() {
       <li>A static “block untrusted” rule misses <b>${e.baseline_static?.attacks_missed_allowed ?? "?"}/${e.attacks_total}</b> of the attacks</li>
       <li>Decisions unchanged across <b>${e.stability?.repeats ?? "?"}</b> repeated retrievals (Moss scores are noisy)</li></ul>
       <p>Synthetic data. A simple same-shape majority vote scores about the same here: most of the signal is explicit features; retrieval adds ranking, evidence and live adaptation.</p></div>` : `<div class="tile"><h2>Held-out evaluation</h2><p>Run <code>eval/eval_heldout.py</code> to populate.</p></div>`;
-  const wb = m?.writeback_insert_to_retrievable_ms;
+  const wb = (h || m)?.writeback_insert_to_retrievable_ms;
   const t3 = `<div class="tile"><h2>Human decision to enforced</h2>
-      <div class="big">${wb ? ms(wb.p50) + " ms" : "—"}<small>p50 insert → retrievable${wb ? ` · n=${wb.n}` : ""}</small></div>
+      <div class="big">${wb ? ms(wb.p50) + " ms" : "—"}<small>p50 insert → retrievable${wb ? ` · n=${wb.n}` : ""}${h ? " · deployed host" : ""}</small></div>
       <p>${s.writeback_ms?.last != null ? `This session: last write-back <b>${ms(s.writeback_ms.last)} ms</b>. ` : ""}A review decision goes straight into the live in-process index. There is no reindex job, so the next call already sees it.</p>
       <p>Fail-closed: if the lookup errors or exceeds its ${s.budget_ms ?? 50} ms budget, the action is blocked, never allowed.</p></div>`;
   $("#proof").innerHTML = t1 + t2 + t3;

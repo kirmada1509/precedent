@@ -1,4 +1,4 @@
-"""Measured Moss latency for Precedent checks. Writes the `moss` section of docs/bench.json.
+"""Measured Moss latency for Precedent checks. Writes the `moss` section of docs/bench.json (`BENCH_KEY` / `BENCH_MACHINE` override it for a hosted run).
 
     uv run --env-file .env python eval/bench_latency.py
 
@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import platform
 import random
 import sys
@@ -69,7 +70,7 @@ async def main() -> None:
         writes.append(await idx.add(rec))
 
     out = {
-        "machine": f"{platform.machine()} {platform.system()} (developer laptop)",
+        "machine": os.getenv("BENCH_MACHINE") or f"{platform.machine()} {platform.system()} (developer laptop)",
         "index_docs": idx.doc_count - len(writes),
         "budget_ms": s.budget_ms,
         "burst_1000": {"moss_query_ms": summary(burst_moss), "whole_check_ms": summary(burst_total)},
@@ -82,7 +83,7 @@ async def main() -> None:
     }
     path = ROOT / "docs" / "bench.json"
     prev = json.loads(path.read_text()) if path.exists() else {}
-    prev["moss"] = out
+    prev[os.getenv("BENCH_KEY", "moss")] = out
     path.write_text(json.dumps(prev, indent=2))
     print(json.dumps(out, indent=2))
 

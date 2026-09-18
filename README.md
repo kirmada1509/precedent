@@ -8,7 +8,7 @@ An AI agent makes dozens of tool calls per task. A policy check that costs an LL
 
 | | |
 |---|---|
-| **Live demo** | _added after deployment (Hugging Face Space)_ |
+| **Live demo** | _added once the public URL is set_ |
 | **Video (≤2 min)** | _added after recording_ |
 | **Architecture** | [docs/architecture.svg](docs/architecture.svg) · [docs/architecture.md](docs/architecture.md) |
 | **PRD** | [docs/PRD.md](docs/PRD.md) |
@@ -41,14 +41,16 @@ uv run --env-file .env python eval/bench_latency.py       # latency benchmark on
 uv run --env-file .env python eval/baseline_llm_judge.py  # the LLM-judge comparison (needs GEMINI_API_KEY)
 ```
 
-## Deploy (Hugging Face Space)
+## Deploy
+
+Any Docker host works (the image needs `linux/amd64`: Moss's native core needs glibc ≥ 2.35):
 
 ```bash
-# once: create a Docker Space, add secrets MOSS_PROJECT_ID and MOSS_PROJECT_KEY in its settings
-scripts/deploy_hf.sh <hf-username>/<space-name>
+docker build -t precedent .
+docker run -d --name precedent --restart unless-stopped --env-file .env -p 127.0.0.1:7860:7860 precedent
 ```
 
-The image runs on port 7860 as a non-root user and needs `linux/amd64` (Moss's native core needs glibc ≥ 2.35). Hosted runs use a 100 ms fail-closed budget (`PRECEDENT_BUDGET_MS`) because shared CPUs are slower than the dev laptop; the UI shows whether each check met it. Do not set a Gemini key on a public Space: anyone could then spend it via the live-agent button.
+Put a TLS reverse proxy in front for a public URL. The image runs as a non-root user on port 7860 and defaults to a 100 ms fail-closed budget (`PRECEDENT_BUDGET_MS`); the UI shows whether each check met it. Do not set a Gemini key on a public instance: anyone could then spend it via the live-agent button. Hugging Face Docker Spaces need a PRO plan now; `scripts/deploy_hf.sh` is kept for that case.
 
 ## How Moss is used
 
@@ -61,15 +63,17 @@ Moss is the retrieval layer on the hot path of every action, not an add-on.
 
 ## Results (all measured; see `docs/eval*.json`, `docs/bench.json`)
 
-**Latency** (developer laptop, Apple Silicon, 403 precedents, whole check = featurize + Moss query + decision):
+**Latency** (403 precedents, whole check = featurize + Moss query + decision):
 
 | | p50 | p95 | p99 |
 |---|---|---|---|
-| Back-to-back, 1,000 checks | 4.3 ms | 5.3 ms | 5.8 ms |
-| One call every 300 ms, 100 checks | 15 ms | 20 ms | 22 ms |
+| Laptop (Apple Silicon), back-to-back, 1,000 checks | 4.3 ms | 5.3 ms | 5.8 ms |
+| Laptop, one call every 300 ms, 100 checks | 15 ms | 20 ms | 22 ms |
+| **Deployed host** (x86_64 VPS, 1.5 CPU cap), back-to-back | 13 ms | 16 ms | 19 ms |
+| **Deployed host**, one call every 300 ms | 14 ms | 17 ms | 20 ms |
 | LLM judge (`gemini-3.1-flash-lite`), 30 calls | 3.8 s | 18 s | |
 
-We report both regimes: a busy agent sees ~4 ms, a realistic paced agent ~15 ms (Moss queries are slower after a pause on this machine, and a keep-warm loop did not help). The LLM figure was measured from this laptop on a day the API was returning "high demand" errors, so it is inflated; even at a best case of ~0.5 s it would be 30–100× slower. One 40-action agent run, every action checked: **0.2–0.6 s** with Precedent vs **~150 s** with that LLM judge.
+On the laptop a busy agent sees ~4 ms but a paced one ~15 ms (Moss queries were slower after a pause there, and a keep-warm loop did not help). The VPS shows no such effect, but its CPU is about 3× slower, so it sits at ~13–14 ms either way; it also shares the machine with other live services. Write-back (insert to retrievable) is 32 ms p50 on the host, 11 ms on the laptop. The LLM figure was measured from this laptop on a day the API was returning "high demand" errors, so it is inflated; even at a best case of ~0.5 s it would be 30–100× slower. One 40-action agent run, every action checked: **0.2–0.6 s** with Precedent (laptop to host) vs **~150 s** with that LLM judge.
 
 **Accuracy on synthetic held-out sets** (103 actions each: routine, benign look-alikes, injections, exfiltration, over-limit, no-order, obfuscated, novel tools and shapes):
 

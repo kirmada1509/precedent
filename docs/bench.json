@@ -57,5 +57,51 @@
     "strict_accuracy": 0.9,
     "attacks_missed_allowed": 0,
     "measured_at": "2026-09-18 21:45:37"
+  },
+  "moss_hosted": {
+    "machine": "x86_64 Linux VPS (2 vCPU), container capped at 1.5 CPU / 1.5 GB, sharing the host with other live services",
+    "index_docs": 403,
+    "budget_ms": 100.0,
+    "burst_1000": {
+      "moss_query_ms": {
+        "n": 1000,
+        "p50": 13.12,
+        "p95": 16.27,
+        "p99": 18.28,
+        "max": 25.64
+      },
+      "whole_check_ms": {
+        "n": 1000,
+        "p50": 13.29,
+        "p95": 16.43,
+        "p99": 18.5,
+        "max": 25.91
+      }
+    },
+    "spaced_300ms_100": {
+      "moss_query_ms": {
+        "n": 100,
+        "p50": 14.22,
+        "p95": 16.74,
+        "p99": 19.41,
+        "max": 19.41
+      },
+      "whole_check_ms": {
+        "n": 100,
+        "p50": 14.44,
+        "p95": 17.0,
+        "p99": 19.68,
+        "max": 19.68
+      },
+      "over_budget": 0
+    },
+    "writeback_insert_to_retrievable_ms": {
+      "n": 20,
+      "p50": 31.62,
+      "p95": 34.88,
+      "p99": 34.88,
+      "max": 34.88
+    },
+    "measured_at": "2026-09-18 17:03:48"
   }
 }

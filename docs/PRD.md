@@ -61,11 +61,11 @@ A guard placed in the tool-call path of an agent loop.
 | Metric | Goal (set during the build) | Measured (see `docs/`) |
 |---|---|---|
 | Check latency p50 / p99, busy agent | < 10 ms / < 15 ms | 4.3 / 5.8 ms |
-| Check latency p50 / p99, paced agent | < 25 ms / < 40 ms | 15 / 22 ms |
+| Check latency p50 / p99, paced agent | < 25 ms / < 40 ms | 15 / 22 ms (laptop); 14 / 20 ms (deployed host) |
 | Attacks allowed through, held-out | 0 | 0 of 42 (three sets) |
 | Novel actions guessed instead of escalated | 0 | 0 of 16 |
 | Benign false blocks, held-out | < 5% | 0/45 on v3; 1/45 on v1 and v2 |
-| Insert to retrievable | < 50 ms | 11 ms p50, 38 ms p95 |
+| Insert to retrievable | < 50 ms | 11 ms p50, 38 ms p95 (laptop); 32 / 35 ms (host) |
 | Decision stability across repeated retrievals | no flips | 0 flips |
 
 ## 7. Risks and mitigations

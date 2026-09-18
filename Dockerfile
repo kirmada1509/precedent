@@ -5,7 +5,8 @@ FROM python:3.12-slim-bookworm
 COPY --from=ghcr.io/astral-sh/uv:0.9 /uv /usr/local/bin/uv
 
 # Hugging Face Spaces runs containers as uid 1000; Railway and others don't care. Use it everywhere.
-RUN useradd -m -u 1000 user
+# Create the app dir as root and hand it over: the legacy (non-BuildKit) builder creates WORKDIR as root.
+RUN useradd -m -u 1000 user && mkdir -p /home/user/app && chown user:user /home/user/app
 USER user
 ENV HOME=/home/user
 WORKDIR /home/user/app
