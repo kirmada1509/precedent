@@ -104,7 +104,7 @@ Moss (`moss` Python SDK, local sessions, hybrid search, metadata filtering), Pyt
 
 - **Live demo:** https://precedent-boss.duckdns.org
 - **Code:** https://github.com/kirmada1509/precedent
-- **Video (≈1:30):** **[YOUTUBE / LOOM LINK]**
+- **Video (1:33):** https://precedent-boss.duckdns.org/media/
 - **PRD:** https://github.com/kirmada1509/precedent/blob/main/docs/PRD.md
 - **Architecture diagram:** https://github.com/kirmada1509/precedent/blob/main/docs/architecture.svg
 
@@ -136,13 +136,13 @@ All data is synthetic and the support desk is fictional. The narration in the vi
 | Deployed link | https://precedent-boss.duckdns.org |
 | Architecture diagram | `docs/img/architecture.png` (or https://github.com/kirmada1509/precedent/blob/main/docs/architecture.svg) |
 | PRD | https://github.com/kirmada1509/precedent/blob/main/docs/PRD.md |
-| Video demo (≤2 min) | **[YOUTUBE / LOOM LINK]** |
+| Video demo (≤2 min) | https://precedent-boss.duckdns.org/media/ |
 | Theme | 4. Agent Reliability, Security & Evaluation |
 | Moss usage (one line) | In-process Moss session with hybrid search and a tool filter on the hot path of every agent action; live `add_docs` makes human decisions enforceable on the next call, ~13 ms per check. |
 
 ## Before you submit
 
-- [ ] Upload the video, confirm it plays logged out, paste the link in both places and in the README.
+- [x] Video hosted at https://precedent-boss.duckdns.org/media/ (plays, 1:33). Swap in a YouTube link later if you prefer.
 - [ ] Open https://precedent-boss.duckdns.org in a private window, run the flow once, press **Reset**.
 - [ ] Replace **[brackets]** above; add the organizers' reply to `docs/DISCLOSURES.md`.
 - [ ] Submit on **both** Devpost and HiDevs before Sun 20 Sep, 11:59 PM IST; screenshot each confirmation.

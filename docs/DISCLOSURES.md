@@ -15,5 +15,7 @@
 - **AI assistance.** The code and documents were written with Claude Code as a pair-programming assistant.
 - Rules question for organizers (whether work before the event window counts) is recorded here once answered: _pending_.
 
+- The demo video is hosted on the same server (`/media/`) and its narration is AI-generated speech (Gemini text-to-speech).
+
 ## Known limitations
 See the README section "Honest limits".
